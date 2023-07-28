@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: Air Quality API v0.1
+  description: |-
+    This is a simple swagger API documentation around the Air quality API server.
+  version: v0.1
+servers:
+  - url: http://localhost:8050
+tags:
+  - name: Air readings
+    description: Operations that control the air readings
+paths:
+  /air-quality:
+    get:
+      tags:
+        - Air readings
+      summary: Fetch current air quality readings
+      description: Fetch the current air quality readings. If readings hasn't started it will all be empty
+      operationId: getAirQuality
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirQuality'
+        '500':
+          description: Fetch failed
+  /start:
+    post:
+      tags:
+        - Air readings
+      summary: Start air quality readings
+      description: When requested the controller will start reading air quality samples
+      operationId: startAirQuality
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralResponse'
+        '500':
+          description: Start failed
+  /stop:
+    post:
+      tags:
+        - Air readings
+      summary: Stop air quality readings
+      description: When requested the controller will stop reading air quality samples
+      operationId: stopAirQuality
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralResponse'
+        '500':
+          description: Stop failed
+  /single-reading:
+    get:
+      tags:
+        - Air readings
+      summary: Fetch air quality readings once
+      description: Fetch the air readings, even if the readings haven't started or stopped.
+      operationId: getSingleReading
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirQuality'
+        '500':
+          description: Fetch failed
+components:
+  schemas:
+    AirQuality:
+      type: object
+      properties:
+        sensors:
+          type: object
+          properties:
+            light:
+              $ref: '#/components/schemas/SensorReading'
+            hazardous_gases:
+              $ref: '#/components/schemas/SensorReading'
+            humidity:
+              $ref: '#/components/schemas/SensorReading'
+            pressure:
+              $ref: '#/components/schemas/SensorReading'
+            temperature:
+              $ref: '#/components/schemas/SensorReading'
+        current_time:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+    GeneralResponse:
+      type: object
+    SensorReading:
+      type: object
+      properties:
+        reading:
+          type: number
