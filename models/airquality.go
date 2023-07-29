@@ -3,7 +3,7 @@ package models
 import "time"
 
 type AirQuality struct {
-	Sensors     Sensors   `json:"sensors"`
+	Sensors     *Sensors  `json:"sensors"`
 	CurrentTime time.Time `json:"current_time"`
 	Errors      []string  `json:"errors"`
 }

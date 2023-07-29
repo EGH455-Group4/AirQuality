@@ -6,51 +6,55 @@ import (
 
 	"github.com/ImTheTom/air-quality/config"
 	"github.com/ImTheTom/air-quality/models"
+	"github.com/ImTheTom/air-quality/service"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
 type AirQualityHandler struct {
-	cfg    *config.Config
-	router *mux.Router
+	cfg               *config.Config
+	router            *mux.Router
+	airQualityService *service.AirQualityService
 }
 
-func NewAirQualityHandler(cfg *config.Config) *AirQualityHandler {
+func NewAirQualityHandler(cfg *config.Config, srv *service.AirQualityService) *AirQualityHandler {
+	airQualityHandler := &AirQualityHandler{
+		cfg:               cfg,
+		airQualityService: srv,
+	}
+
 	router := mux.NewRouter()
 
-	router.HandleFunc("/air-quality", airQualityHandler).Methods(http.MethodGet)
-	router.HandleFunc("/single-read", singleReadHandler).Methods(http.MethodGet)
+	router.HandleFunc("/air-quality", airQualityHandler.airQualityHandler).Methods(http.MethodGet)
+	router.HandleFunc("/single-read", airQualityHandler.singleReadHandler).Methods(http.MethodGet)
 
-	router.HandleFunc("/start", startHandler).Methods(http.MethodPost)
-	router.HandleFunc("/stop", stopHandler).Methods(http.MethodPost)
+	router.HandleFunc("/start", airQualityHandler.startHandler).Methods(http.MethodPost)
+	router.HandleFunc("/stop", airQualityHandler.stopHandler).Methods(http.MethodPost)
 
-	return &AirQualityHandler{
-		cfg:    cfg,
-		router: router,
-	}
+	airQualityHandler.router = router
+
+	return airQualityHandler
 }
 
 func (a *AirQualityHandler) Run() error {
 	return http.ListenAndServe(a.cfg.Address, a.router)
 }
 
-func airQualityHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *AirQualityHandler) airQualityHandler(rsp http.ResponseWriter, req *http.Request) {
+	marshalOkRsp(rsp, a.airQualityService.GetAirQuality())
+}
+
+func (a *AirQualityHandler) singleReadHandler(rsp http.ResponseWriter, req *http.Request) {
 	airQuality := &models.AirQuality{}
 
 	marshalOkRsp(rsp, airQuality)
 }
 
-func singleReadHandler(rsp http.ResponseWriter, req *http.Request) {
-	airQuality := &models.AirQuality{}
-
-	marshalOkRsp(rsp, airQuality)
-}
-
-func startHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *AirQualityHandler) startHandler(rsp http.ResponseWriter, req *http.Request) {
 	marshalOkRsp(rsp, struct{}{})
 }
 
-func stopHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *AirQualityHandler) stopHandler(rsp http.ResponseWriter, req *http.Request) {
 	marshalOkRsp(rsp, struct{}{})
 }
 
