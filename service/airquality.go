@@ -1,11 +1,13 @@
 package service
 
 import (
+	"sync"
 	"time"
 
 	"github.com/ImTheTom/air-quality/config"
 	"github.com/ImTheTom/air-quality/models"
 	"github.com/ImTheTom/air-quality/sensors"
+	"github.com/sirupsen/logrus"
 )
 
 type AirQualityService struct {
@@ -59,11 +61,31 @@ func (s *AirQualityService) ResetVars() {
 	s.Errors = []string{}
 }
 
-func (s *AirQualityService) RunReadSensors() {
-	for {
-		s.ReadSensors()
+func (s *AirQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup) {
+	logrus.Info("Running read sensors loop")
 
-		time.Sleep(time.Duration(s.cfg.SensorReadSeconds) * time.Second)
+	wg.Add(1)
+	defer wg.Done()
+
+	for {
+		select {
+		case <-closeCh:
+			close(closeCh)
+
+			logrus.Info("Received shutdown call, exiting now...")
+
+			return
+		default:
+			if s.Running {
+				s.ReadSensors()
+
+				logrus.WithField("sensor_reading", s.Sensors).Info("Read sensors")
+			} else {
+				logrus.Info("Not currently running read sensors")
+			}
+
+			time.Sleep(time.Duration(s.cfg.SensorReadSeconds) * time.Second)
+		}
 	}
 }
 
