@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"github.com/ImTheTom/air-quality/config"
+	"github.com/sirupsen/logrus"
+)
 
 func main() {
-	fmt.Println("Hello world")
+	config.LoggerSetup()
+
+	config.SetupConfig("config.json")
+
+	logrus.WithField("config", config.GetConfig()).Info("Running with config")
+
+	logrus.Info("Hello world")
 }
