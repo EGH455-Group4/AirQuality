@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/ImTheTom/air-quality/config"
-	"github.com/ImTheTom/air-quality/models"
 	"github.com/ImTheTom/air-quality/service"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -45,16 +44,18 @@ func (a *AirQualityHandler) airQualityHandler(rsp http.ResponseWriter, req *http
 }
 
 func (a *AirQualityHandler) singleReadHandler(rsp http.ResponseWriter, req *http.Request) {
-	airQuality := &models.AirQuality{}
-
-	marshalOkRsp(rsp, airQuality)
+	marshalOkRsp(rsp, a.airQualityService.SingleRead())
 }
 
 func (a *AirQualityHandler) startHandler(rsp http.ResponseWriter, req *http.Request) {
+	a.airQualityService.Start()
+
 	marshalOkRsp(rsp, struct{}{})
 }
 
 func (a *AirQualityHandler) stopHandler(rsp http.ResponseWriter, req *http.Request) {
+	a.airQualityService.Stop()
+
 	marshalOkRsp(rsp, struct{}{})
 }
 
