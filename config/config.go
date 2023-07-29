@@ -9,7 +9,8 @@ import (
 )
 
 type Config struct {
-	MockHardware bool `json:"mock_hardware"`
+	MockHardware bool   `json:"mock_hardware"`
+	Address      string `json:"address"`
 }
 
 var (
@@ -17,8 +18,7 @@ var (
 )
 
 var (
-	errBadConfig = errors.New("Bad config was loaded in")
-	errNoConfig  = errors.New("Can't find config file")
+	errNoConfig = errors.New("Can't find config file")
 )
 
 func GetConfig() *Config {
@@ -28,6 +28,7 @@ func GetConfig() *Config {
 func SetupConfig(location string) {
 	defaultConfig := Config{
 		MockHardware: false,
+		Address:      ":8050",
 	}
 
 	cfg = &defaultConfig
