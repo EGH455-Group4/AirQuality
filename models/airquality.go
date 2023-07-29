@@ -17,7 +17,7 @@ type Sensors struct {
 }
 
 type SensorReading struct {
-	Reading string `json:"reading"`
+	Reading float64 `json:"reading"`
 }
 
 type GeneralResponse struct{}
