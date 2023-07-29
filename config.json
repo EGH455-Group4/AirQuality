@@ -1,4 +1,5 @@
 {
 	"mock_hardware": true,
-	"address": ":8050"
+	"address": ":8050",
+	"sensor_read_seconds": 2
 }

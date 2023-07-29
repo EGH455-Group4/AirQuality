@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	MockHardware bool   `json:"mock_hardware"`
-	Address      string `json:"address"`
+	MockHardware      bool   `json:"mock_hardware"`
+	Address           string `json:"address"`
+	SensorReadSeconds int    `json:"sensor_read_seconds"`
 }
 
 var (

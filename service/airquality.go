@@ -59,6 +59,14 @@ func (s *AirQualityService) ResetVars() {
 	s.Errors = []string{}
 }
 
+func (s *AirQualityService) RunReadSensors() {
+	for {
+		s.ReadSensors()
+
+		time.Sleep(time.Duration(s.cfg.SensorReadSeconds) * time.Second)
+	}
+}
+
 func (s *AirQualityService) ReadSensors() {
 	s.Errors = []string{}
 
