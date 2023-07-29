@@ -1,3 +1,4 @@
 {
-	"mock_hardware": true
+	"mock_hardware": true,
+	"address": ":8050"
 }
