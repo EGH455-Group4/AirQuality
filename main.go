@@ -1,6 +1,11 @@
 package main
 
 import (
+	"context"
+	"os"
+	"os/signal"
+	"time"
+
 	"github.com/ImTheTom/air-quality/config"
 	"github.com/ImTheTom/air-quality/handler"
 	"github.com/ImTheTom/air-quality/sensors"
@@ -21,7 +26,16 @@ func main() {
 
 	hndlr := handler.NewAirQualityHandler(config.GetConfig(), srv)
 
-	if err := hndlr.Run(); err != nil {
-		logrus.Fatal(err.Error())
+	handlerServer := hndlr.Run()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+
+	<-stop
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := handlerServer.Shutdown(ctx); err != nil {
+		logrus.WithError(err).Error("Shutdown required timeout context")
 	}
 }
