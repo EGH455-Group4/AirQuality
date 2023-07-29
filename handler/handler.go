@@ -35,8 +35,20 @@ func NewAirQualityHandler(cfg *config.Config, srv *service.AirQualityService) *A
 	return airQualityHandler
 }
 
-func (a *AirQualityHandler) Run() error {
-	return http.ListenAndServe(a.cfg.Address, a.router)
+func (a *AirQualityHandler) Run() *http.Server {
+	srv := &http.Server{
+		Addr:    a.cfg.Address,
+		Handler: a.router,
+	}
+
+	go func() {
+		// Will always returns error, but check if it's something that isn't related to graceful shutdown.
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			logrus.WithError(err).Error("ListenAndServe failed")
+		}
+	}()
+
+	return srv
 }
 
 func (a *AirQualityHandler) airQualityHandler(rsp http.ResponseWriter, req *http.Request) {
