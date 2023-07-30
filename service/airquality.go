@@ -84,7 +84,10 @@ func (s *airQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup
 			if s.Running {
 				s.readSensors()
 
-				logrus.WithField("sensor_reading", s.Sensors).Info("Read sensors")
+				logrus.WithFields(logrus.Fields{
+					"sensor_reading": s.Sensors,
+					"errors":         s.Errors,
+				}).Info("Read sensors")
 			} else {
 				logrus.Info("Not currently running read sensors")
 			}
