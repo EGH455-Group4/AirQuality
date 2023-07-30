@@ -1,5 +1,7 @@
 package sensors
 
+//go:generate mockgen -destination mocks/airqualitysensor.mock.go -package mocks -source airqualitysensor.go
+
 type AirQualitySensor interface {
 	ReadLight() (float64, error)
 	ReadHazardousGases() (float64, error)

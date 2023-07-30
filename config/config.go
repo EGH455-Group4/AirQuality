@@ -16,9 +16,7 @@ type Config struct {
 
 var (
 	cfg *Config
-)
 
-var (
 	errNoConfig = errors.New("Can't find config file")
 )
 
@@ -28,8 +26,9 @@ func GetConfig() *Config {
 
 func SetupConfig(location string) {
 	defaultConfig := Config{
-		MockHardware: false,
-		Address:      ":8050",
+		MockHardware:      false,
+		Address:           ":8050",
+		SensorReadSeconds: 5,
 	}
 
 	cfg = &defaultConfig

@@ -10,6 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+//go:generate mockgen -destination mocks/handler.mock.go -package mocks -source handler.go
+
 type AirQualityHandler interface {
 	Run() *http.Server
 }

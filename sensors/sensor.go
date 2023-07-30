@@ -7,6 +7,8 @@ import (
 	"github.com/ImTheTom/air-quality/models"
 )
 
+//go:generate mockgen -destination mocks/sensor.mock.go -package mocks -source sensor.go
+
 type AirQualityReader interface {
 	ReadSensor(wantedReading Reading) (*models.SensorReading, error)
 }
@@ -27,6 +29,13 @@ func NewAirQualityReader(cfg *config.Config) AirQualityReader {
 	return &airQualityReader{
 		cfg:              cfg,
 		AirQualitySensor: airQualitySensor,
+	}
+}
+
+func NewAirQualityReaderFromSensor(cfg *config.Config, sensor AirQualitySensor) AirQualityReader {
+	return &airQualityReader{
+		cfg:              cfg,
+		AirQualitySensor: sensor,
 	}
 }
 
