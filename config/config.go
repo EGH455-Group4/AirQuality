@@ -12,6 +12,7 @@ type Config struct {
 	MockHardware      bool   `json:"mock_hardware"`
 	Address           string `json:"address"`
 	SensorReadSeconds int    `json:"sensor_read_seconds"`
+	ParallelRead      bool   `json:"parallel_read"`
 }
 
 var (
@@ -29,6 +30,7 @@ func SetupConfig(location string) {
 		MockHardware:      false,
 		Address:           ":8050",
 		SensorReadSeconds: 5,
+		ParallelRead:      false,
 	}
 
 	cfg = &defaultConfig
