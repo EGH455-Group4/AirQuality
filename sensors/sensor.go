@@ -7,26 +7,30 @@ import (
 	"github.com/ImTheTom/air-quality/models"
 )
 
-type AirQualityReader struct {
+type AirQualityReader interface {
+	ReadSensor(wantedReading Reading) (*models.SensorReading, error)
+}
+
+type airQualityReader struct {
 	cfg              *config.Config
 	AirQualitySensor AirQualitySensor
 }
 
 var ErrorUnknownReading = errors.New("Unknown wanted reading")
 
-func NewAirQualityReader(cfg *config.Config) *AirQualityReader {
+func NewAirQualityReader(cfg *config.Config) AirQualityReader {
 	airQualitySensor := NewEnviroSensor()
 	if cfg.MockHardware {
 		airQualitySensor = NewFakeSensor()
 	}
 
-	return &AirQualityReader{
+	return &airQualityReader{
 		cfg:              cfg,
 		AirQualitySensor: airQualitySensor,
 	}
 }
 
-func (s *AirQualityReader) ReadSensor(wantedReading Reading) (*models.SensorReading, error) {
+func (a *airQualityReader) ReadSensor(wantedReading Reading) (*models.SensorReading, error) {
 	var (
 		reading float64
 		err     error
@@ -34,15 +38,15 @@ func (s *AirQualityReader) ReadSensor(wantedReading Reading) (*models.SensorRead
 
 	switch wantedReading {
 	case Light:
-		reading, err = s.AirQualitySensor.ReadLight()
+		reading, err = a.AirQualitySensor.ReadLight()
 	case HazardousGases:
-		reading, err = s.AirQualitySensor.ReadHazardousGases()
+		reading, err = a.AirQualitySensor.ReadHazardousGases()
 	case Humidity:
-		reading, err = s.AirQualitySensor.ReadHumidity()
+		reading, err = a.AirQualitySensor.ReadHumidity()
 	case Pressure:
-		reading, err = s.AirQualitySensor.ReadPressure()
+		reading, err = a.AirQualitySensor.ReadPressure()
 	case Temperature:
-		reading, err = s.AirQualitySensor.ReadTemperature()
+		reading, err = a.AirQualitySensor.ReadTemperature()
 	default:
 		return nil, ErrorUnknownReading
 	}

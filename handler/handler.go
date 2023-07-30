@@ -10,14 +10,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type AirQualityHandler struct {
-	cfg               *config.Config
-	router            *mux.Router
-	airQualityService *service.AirQualityService
+type AirQualityHandler interface {
+	Run() *http.Server
 }
 
-func NewAirQualityHandler(cfg *config.Config, srv *service.AirQualityService) *AirQualityHandler {
-	airQualityHandler := &AirQualityHandler{
+type airQualityHandler struct {
+	cfg               *config.Config
+	router            *mux.Router
+	airQualityService service.AirQualityService
+}
+
+func NewAirQualityHandler(cfg *config.Config, srv service.AirQualityService) AirQualityHandler {
+	airQualityHandler := &airQualityHandler{
 		cfg:               cfg,
 		airQualityService: srv,
 	}
@@ -35,7 +39,7 @@ func NewAirQualityHandler(cfg *config.Config, srv *service.AirQualityService) *A
 	return airQualityHandler
 }
 
-func (a *AirQualityHandler) Run() *http.Server {
+func (a *airQualityHandler) Run() *http.Server {
 	srv := &http.Server{
 		Addr:    a.cfg.Address,
 		Handler: a.router,
@@ -51,21 +55,21 @@ func (a *AirQualityHandler) Run() *http.Server {
 	return srv
 }
 
-func (a *AirQualityHandler) airQualityHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) airQualityHandler(rsp http.ResponseWriter, req *http.Request) {
 	marshalOkRsp(rsp, a.airQualityService.GetAirQuality())
 }
 
-func (a *AirQualityHandler) singleReadHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) singleReadHandler(rsp http.ResponseWriter, req *http.Request) {
 	marshalOkRsp(rsp, a.airQualityService.SingleRead())
 }
 
-func (a *AirQualityHandler) startHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) startHandler(rsp http.ResponseWriter, req *http.Request) {
 	a.airQualityService.Start()
 
 	marshalOkRsp(rsp, struct{}{})
 }
 
-func (a *AirQualityHandler) stopHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) stopHandler(rsp http.ResponseWriter, req *http.Request) {
 	a.airQualityService.Stop()
 
 	marshalOkRsp(rsp, struct{}{})

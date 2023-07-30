@@ -10,16 +10,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type AirQualityService struct {
+type AirQualityService interface {
+	GetAirQuality() *models.AirQuality
+	SingleRead() *models.AirQuality
+	Start()
+	Stop()
+	RunReadSensors(closeCh chan bool, wg *sync.WaitGroup)
+}
+
+type airQualityService struct {
 	cfg              *config.Config
 	Sensors          *models.Sensors
 	Errors           []string
 	Running          bool
-	AirQualityReader *sensors.AirQualityReader
+	AirQualityReader sensors.AirQualityReader
 }
 
-func NewAirQualityService(cfg *config.Config, airReader *sensors.AirQualityReader) *AirQualityService {
-	return &AirQualityService{
+func NewAirQualityService(cfg *config.Config, airReader sensors.AirQualityReader) AirQualityService {
+	return &airQualityService{
 		cfg:              cfg,
 		Sensors:          &models.Sensors{},
 		Errors:           []string{},
@@ -28,7 +36,7 @@ func NewAirQualityService(cfg *config.Config, airReader *sensors.AirQualityReade
 	}
 }
 
-func (s *AirQualityService) GetAirQuality() *models.AirQuality {
+func (s *airQualityService) GetAirQuality() *models.AirQuality {
 	return &models.AirQuality{
 		Sensors:     s.Sensors,
 		CurrentTime: time.Now(),
@@ -36,8 +44,8 @@ func (s *AirQualityService) GetAirQuality() *models.AirQuality {
 	}
 }
 
-func (s *AirQualityService) SingleRead() *models.AirQuality {
-	s.ReadSensors()
+func (s *airQualityService) SingleRead() *models.AirQuality {
+	s.readSensors()
 
 	return &models.AirQuality{
 		Sensors:     s.Sensors,
@@ -46,22 +54,17 @@ func (s *AirQualityService) SingleRead() *models.AirQuality {
 	}
 }
 
-func (s *AirQualityService) Start() {
-	s.ResetVars()
+func (s *airQualityService) Start() {
+	s.resetVars()
 	s.Running = true
 }
 
-func (s *AirQualityService) Stop() {
-	s.ResetVars()
+func (s *airQualityService) Stop() {
+	s.resetVars()
 	s.Running = false
 }
 
-func (s *AirQualityService) ResetVars() {
-	s.Sensors = &models.Sensors{}
-	s.Errors = []string{}
-}
-
-func (s *AirQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup) {
+func (s *airQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup) {
 	logrus.Info("Running read sensors loop")
 
 	wg.Add(1)
@@ -77,7 +80,7 @@ func (s *AirQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup
 			return
 		default:
 			if s.Running {
-				s.ReadSensors()
+				s.readSensors()
 
 				logrus.WithField("sensor_reading", s.Sensors).Info("Read sensors")
 			} else {
@@ -89,7 +92,7 @@ func (s *AirQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup
 	}
 }
 
-func (s *AirQualityService) ReadSensors() {
+func (s *airQualityService) readSensors() {
 	s.Errors = []string{}
 
 	if lightReading, err := s.AirQualityReader.ReadSensor(sensors.Light); err != nil {
@@ -126,4 +129,9 @@ func (s *AirQualityService) ReadSensors() {
 	} else {
 		s.Sensors.Temperature = temperatureReading
 	}
+}
+
+func (s *airQualityService) resetVars() {
+	s.Sensors = &models.Sensors{}
+	s.Errors = []string{}
 }
