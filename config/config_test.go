@@ -14,6 +14,7 @@ func TestConfigSetup_CreatesDefaultIfMissing(t *testing.T) {
 		Address:           ":8050",
 		SensorReadSeconds: 5,
 		ParallelRead:      false,
+		StartOnBoot:       false,
 	}, GetConfig())
 }
 
@@ -25,5 +26,6 @@ func TestConfigSetup_HandlesJsonFileCorrectly(t *testing.T) {
 		Address:           ":9090",
 		SensorReadSeconds: 60,
 		ParallelRead:      false,
+		StartOnBoot:       true,
 	}, GetConfig())
 }
