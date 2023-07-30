@@ -1,0 +1,10 @@
+#!/bin/bash
+
+TIMESTAMP=$EPOCHSECONDS
+FILENAME="air-quality-$TIMESTAMP.txt"
+
+LOCATION="logs/$FILENAME"
+
+echo "OUTPUTTING LOGS TO $LOCATION"
+
+go run . 2>> $LOCATION
