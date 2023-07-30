@@ -10,6 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+//go:generate mockgen -destination mocks/airquality.mock.go -package mocks -source airquality.go
+
 type AirQualityService interface {
 	GetAirQuality() *models.AirQuality
 	SingleRead() *models.AirQuality

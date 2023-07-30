@@ -1,0 +1,5 @@
+{
+	"mock_hardware": true,
+	"address": ":9090",
+	"sensor_read_seconds": 60
+}
