@@ -89,6 +89,18 @@ func (s *AirQualityTestSuite) TestSensor_SingleRead() {
 	assert.Equal(s.T(), expectedModelForReadSensors, airQuality.Sensors)
 }
 
+func (s *AirQualityTestSuite) TestSensor_SingleReadParallel() {
+	s.MockExpectedCallsForRead()
+
+	s.cfg.ParallelRead = true
+
+	airQuality := s.airQualityService.SingleRead()
+
+	assert.NotNil(s.T(), airQuality)
+	assert.Equal(s.T(), 1, len(airQuality.Errors))
+	assert.Equal(s.T(), expectedModelForReadSensors, airQuality.Sensors)
+}
+
 func (s *AirQualityTestSuite) TestSensor_RunReadSensors() {
 	s.MockExpectedCallsForRead()
 
