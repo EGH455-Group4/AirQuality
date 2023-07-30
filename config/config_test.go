@@ -13,6 +13,7 @@ func TestConfigSetup_CreatesDefaultIfMissing(t *testing.T) {
 		MockHardware:      false,
 		Address:           ":8050",
 		SensorReadSeconds: 5,
+		ParallelRead:      false,
 	}, GetConfig())
 }
 
@@ -23,5 +24,6 @@ func TestConfigSetup_HandlesJsonFileCorrectly(t *testing.T) {
 		MockHardware:      true,
 		Address:           ":9090",
 		SensorReadSeconds: 60,
+		ParallelRead:      false,
 	}, GetConfig())
 }
