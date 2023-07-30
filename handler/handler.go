@@ -14,6 +14,12 @@ import (
 
 type AirQualityHandler interface {
 	Run() *http.Server
+
+	AirQualityHandler(rsp http.ResponseWriter, req *http.Request)
+	SingleReadHandler(rsp http.ResponseWriter, req *http.Request)
+
+	StartHandler(rsp http.ResponseWriter, req *http.Request)
+	StopHandler(rsp http.ResponseWriter, req *http.Request)
 }
 
 type airQualityHandler struct {
@@ -30,11 +36,11 @@ func NewAirQualityHandler(cfg *config.Config, srv service.AirQualityService) Air
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/air-quality", airQualityHandler.airQualityHandler).Methods(http.MethodGet)
-	router.HandleFunc("/single-read", airQualityHandler.singleReadHandler).Methods(http.MethodGet)
+	router.HandleFunc("/air-quality", airQualityHandler.AirQualityHandler).Methods(http.MethodGet)
+	router.HandleFunc("/single-read", airQualityHandler.SingleReadHandler).Methods(http.MethodGet)
 
-	router.HandleFunc("/start", airQualityHandler.startHandler).Methods(http.MethodPost)
-	router.HandleFunc("/stop", airQualityHandler.stopHandler).Methods(http.MethodPost)
+	router.HandleFunc("/start", airQualityHandler.StartHandler).Methods(http.MethodPost)
+	router.HandleFunc("/stop", airQualityHandler.StopHandler).Methods(http.MethodPost)
 
 	airQualityHandler.router = router
 
@@ -57,21 +63,21 @@ func (a *airQualityHandler) Run() *http.Server {
 	return srv
 }
 
-func (a *airQualityHandler) airQualityHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) AirQualityHandler(rsp http.ResponseWriter, req *http.Request) {
 	marshalOkRsp(rsp, a.airQualityService.GetAirQuality())
 }
 
-func (a *airQualityHandler) singleReadHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) SingleReadHandler(rsp http.ResponseWriter, req *http.Request) {
 	marshalOkRsp(rsp, a.airQualityService.SingleRead())
 }
 
-func (a *airQualityHandler) startHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) StartHandler(rsp http.ResponseWriter, req *http.Request) {
 	a.airQualityService.Start()
 
 	marshalOkRsp(rsp, struct{}{})
 }
 
-func (a *airQualityHandler) stopHandler(rsp http.ResponseWriter, req *http.Request) {
+func (a *airQualityHandler) StopHandler(rsp http.ResponseWriter, req *http.Request) {
 	a.airQualityService.Stop()
 
 	marshalOkRsp(rsp, struct{}{})
