@@ -13,6 +13,7 @@ type Config struct {
 	Address           string `json:"address"`
 	SensorReadSeconds int    `json:"sensor_read_seconds"`
 	ParallelRead      bool   `json:"parallel_read"`
+	StartOnBoot       bool   `json:"start_on_boot"`
 }
 
 var (
@@ -31,6 +32,7 @@ func SetupConfig(location string) {
 		Address:           ":8050",
 		SensorReadSeconds: 5,
 		ParallelRead:      false,
+		StartOnBoot:       false,
 	}
 
 	cfg = &defaultConfig

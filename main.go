@@ -19,18 +19,25 @@ func main() {
 
 	config.SetupConfig("config.json")
 
-	logrus.WithField("config", config.GetConfig()).Info("Running with config")
+	cfg := config.GetConfig()
 
-	reader := sensors.NewAirQualityReader(config.GetConfig())
+	logrus.WithField("config", cfg).Info("Running with config")
 
-	srv := service.NewAirQualityService(config.GetConfig(), reader)
+	localIP := getLocalIP()
+
+	logrus.WithField("local_ip", localIP).Infof("running on: %s", localIP+cfg.Address)
+
+	reader := sensors.NewAirQualityReader(cfg)
+
+	srv := service.NewAirQualityService(cfg, reader)
 
 	var systemWg sync.WaitGroup
 
-	// For now, just start reading sensors on boot.
-	srv.Start()
+	if cfg.StartOnBoot {
+		srv.Start()
+	}
 
-	hndlr := handler.NewAirQualityHandler(config.GetConfig(), srv)
+	hndlr := handler.NewAirQualityHandler(cfg, srv)
 
 	handlerServer := hndlr.Run()
 

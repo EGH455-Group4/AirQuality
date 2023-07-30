@@ -92,8 +92,6 @@ func (s *airQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup
 					"sensor_reading": s.Sensors,
 					"errors":         s.Errors,
 				}).Info("Read sensors")
-			} else {
-				logrus.Info("Not currently running read sensors")
 			}
 
 			time.Sleep(time.Duration(s.cfg.SensorReadSeconds) * time.Second)
