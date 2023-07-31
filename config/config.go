@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	MockHardware      bool   `json:"mock_hardware"`
-	Address           string `json:"address"`
+	Port              string `json:"port"`
 	SensorReadSeconds int    `json:"sensor_read_seconds"`
 	ParallelRead      bool   `json:"parallel_read"`
 	StartOnBoot       bool   `json:"start_on_boot"`
@@ -29,7 +29,7 @@ func GetConfig() *Config {
 func SetupConfig(location string) {
 	defaultConfig := Config{
 		MockHardware:      false,
-		Address:           ":8050",
+		Port:              ":8050",
 		SensorReadSeconds: 5,
 		ParallelRead:      false,
 		StartOnBoot:       false,

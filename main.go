@@ -25,7 +25,7 @@ func main() {
 
 	localIP := getLocalIP()
 
-	logrus.WithField("local_ip", localIP).Infof("running on: %s", localIP+cfg.Address)
+	logrus.WithField("local_ip", localIP).Infof("running on: %s", localIP+cfg.Port)
 
 	reader := sensors.NewAirQualityReader(cfg)
 

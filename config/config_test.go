@@ -11,7 +11,7 @@ func TestConfigSetup_CreatesDefaultIfMissing(t *testing.T) {
 
 	assert.Equal(t, &Config{
 		MockHardware:      false,
-		Address:           ":8050",
+		Port:              ":8050",
 		SensorReadSeconds: 5,
 		ParallelRead:      false,
 		StartOnBoot:       false,
@@ -23,7 +23,7 @@ func TestConfigSetup_HandlesJsonFileCorrectly(t *testing.T) {
 
 	assert.Equal(t, &Config{
 		MockHardware:      true,
-		Address:           ":9090",
+		Port:              ":9090",
 		SensorReadSeconds: 60,
 		ParallelRead:      false,
 		StartOnBoot:       true,

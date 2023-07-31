@@ -1,6 +1,6 @@
 {
 	"mock_hardware": true,
-	"address": ":9090",
+	"port": ":9090",
 	"sensor_read_seconds": 60,
 	"start_on_boot": true
 }

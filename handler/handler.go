@@ -10,8 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//go:generate mockgen -destination mocks/handler.mock.go -package mocks -source handler.go
-
 type AirQualityHandler interface {
 	Run() *http.Server
 
@@ -49,7 +47,7 @@ func NewAirQualityHandler(cfg *config.Config, srv service.AirQualityService) Air
 
 func (a *airQualityHandler) Run() *http.Server {
 	srv := &http.Server{
-		Addr:    a.cfg.Address,
+		Addr:    a.cfg.Port,
 		Handler: a.router,
 	}
 

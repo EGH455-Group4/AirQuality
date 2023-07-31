@@ -1,6 +1,6 @@
 {
 	"mock_hardware": true,
-	"address": ":8050",
+	"port": ":8050",
 	"sensor_read_seconds": 2,
 	"parallel_read": true
 }
