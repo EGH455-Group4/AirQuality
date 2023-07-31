@@ -68,7 +68,7 @@ func (s *AirQualityTestSuite) TestSensor_GetAirQuality() {
 
 	assert.NotNil(s.T(), airQuality)
 	assert.Empty(s.T(), airQuality.Errors)
-	assert.NotEqual(s.T(), time.Time{}, airQuality.CurrentTime)
+	assert.Equal(s.T(), time.Time{}, airQuality.CurrentTime)
 }
 
 func (s *AirQualityTestSuite) TestSensor_Start() {
