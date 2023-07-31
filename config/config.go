@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"os"
+	"io/ioutil"
 
 	"github.com/sirupsen/logrus"
 )
@@ -43,7 +43,7 @@ func SetupConfig(location string) {
 		return
 	}
 
-	raw, err := os.ReadFile(location)
+	raw, err := ioutil.ReadFile(location)
 	if err != nil {
 		logrus.Warn(err)
 
