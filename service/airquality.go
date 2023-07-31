@@ -27,6 +27,7 @@ type airQualityService struct {
 	Running          bool
 	AirQualityReader sensors.AirQualityReader
 	ReadWg           *sync.WaitGroup
+	ReadTime         time.Time
 }
 
 func NewAirQualityService(cfg *config.Config, airReader sensors.AirQualityReader) AirQualityService {
@@ -39,13 +40,14 @@ func NewAirQualityService(cfg *config.Config, airReader sensors.AirQualityReader
 		Running:          false,
 		AirQualityReader: airReader,
 		ReadWg:           ReadWg,
+		ReadTime:         time.Time{},
 	}
 }
 
 func (s *airQualityService) GetAirQuality() *models.AirQuality {
 	return &models.AirQuality{
 		Sensors:     s.Sensors,
-		CurrentTime: time.Now(),
+		CurrentTime: s.ReadTime,
 		Errors:      s.Errors,
 	}
 }
@@ -55,7 +57,7 @@ func (s *airQualityService) SingleRead() *models.AirQuality {
 
 	return &models.AirQuality{
 		Sensors:     s.Sensors,
-		CurrentTime: time.Now(),
+		CurrentTime: s.ReadTime,
 		Errors:      s.Errors,
 	}
 }
@@ -103,10 +105,14 @@ func (s *airQualityService) readSensors() {
 	if s.cfg.ParallelRead {
 		s.readSensorsParallel()
 
+		s.ReadTime = time.Now()
+
 		return
 	}
 
 	s.readSensorsLinear()
+
+	s.ReadTime = time.Now()
 }
 
 func (s *airQualityService) readSensorsLinear() {
