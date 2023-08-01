@@ -1,21 +1,15 @@
-FROM golang as builder
+FROM golang:1.15.6-alpine3.12
 
-ENV GO111MODULE=on
+WORKDIR /app
 
-WORKDIR /go-modules-docker
-
-COPY . .
-
-WORKDIR /go-modules-docker/go-modules
+ADD go.mod go.sum ./
 
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /go-modules-docker/app
+COPY . .
 
-FROM alpine:3.8
+RUN go build -o ./bin/api .
 
-WORKDIR /root/
+EXPOSE 8050
 
-COPY --from=builder /go-modules-docker/app .
-
-CMD ["./app"]
+ENTRYPOINT [ "./bin/api" ]
