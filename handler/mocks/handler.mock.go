@@ -34,6 +34,18 @@ func (m *MockAirQualityHandler) EXPECT() *MockAirQualityHandlerMockRecorder {
 	return m.recorder
 }
 
+// AirQualityHandler mocks base method.
+func (m *MockAirQualityHandler) AirQualityHandler(rsp http.ResponseWriter, req *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "AirQualityHandler", rsp, req)
+}
+
+// AirQualityHandler indicates an expected call of AirQualityHandler.
+func (mr *MockAirQualityHandlerMockRecorder) AirQualityHandler(rsp, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AirQualityHandler", reflect.TypeOf((*MockAirQualityHandler)(nil).AirQualityHandler), rsp, req)
+}
+
 // Run mocks base method.
 func (m *MockAirQualityHandler) Run() *http.Server {
 	m.ctrl.T.Helper()
@@ -46,4 +58,40 @@ func (m *MockAirQualityHandler) Run() *http.Server {
 func (mr *MockAirQualityHandlerMockRecorder) Run() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockAirQualityHandler)(nil).Run))
+}
+
+// SingleReadHandler mocks base method.
+func (m *MockAirQualityHandler) SingleReadHandler(rsp http.ResponseWriter, req *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SingleReadHandler", rsp, req)
+}
+
+// SingleReadHandler indicates an expected call of SingleReadHandler.
+func (mr *MockAirQualityHandlerMockRecorder) SingleReadHandler(rsp, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SingleReadHandler", reflect.TypeOf((*MockAirQualityHandler)(nil).SingleReadHandler), rsp, req)
+}
+
+// StartHandler mocks base method.
+func (m *MockAirQualityHandler) StartHandler(rsp http.ResponseWriter, req *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "StartHandler", rsp, req)
+}
+
+// StartHandler indicates an expected call of StartHandler.
+func (mr *MockAirQualityHandlerMockRecorder) StartHandler(rsp, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartHandler", reflect.TypeOf((*MockAirQualityHandler)(nil).StartHandler), rsp, req)
+}
+
+// StopHandler mocks base method.
+func (m *MockAirQualityHandler) StopHandler(rsp http.ResponseWriter, req *http.Request) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "StopHandler", rsp, req)
+}
+
+// StopHandler indicates an expected call of StopHandler.
+func (mr *MockAirQualityHandlerMockRecorder) StopHandler(rsp, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StopHandler", reflect.TypeOf((*MockAirQualityHandler)(nil).StopHandler), rsp, req)
 }

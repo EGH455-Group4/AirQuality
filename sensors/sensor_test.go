@@ -51,10 +51,13 @@ func (s *SensorTestSuite) TestSensor_NewAirQualityReader() {
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorUnspecified() {
-	reading, err := s.airQualityReader.ReadSensor(sensors.Unspecified)
+	reading := s.airQualityReader.ReadSensor(sensors.Unspecified)
 
-	assert.Nil(s.T(), reading)
-	assert.Equal(s.T(), sensors.ErrorUnknownReading, err)
+	assert.NotNil(s.T(), reading)
+	assert.Equal(s.T(), &models.SensorReading{
+		Reading: 0,
+		Error:   sensors.ErrorUnknownReading.Error(),
+	}, reading)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorLight() {
@@ -62,13 +65,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorLight() {
 		55.0, nil,
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Light)
+	reading := s.airQualityReader.ReadSensor(sensors.Light)
 
 	assert.NotNil(s.T(), reading)
 	assert.Equal(s.T(), &models.SensorReading{
 		Reading: 55.0,
+		Error:   "",
 	}, reading)
-	assert.NoError(s.T(), err)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorLight_Error() {
@@ -76,10 +79,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorLight_Error() {
 		0.0, errors.New("failed reading"),
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Light)
+	reading := s.airQualityReader.ReadSensor(sensors.Light)
 
-	assert.Nil(s.T(), reading)
-	assert.Error(s.T(), err)
+	assert.NotNil(s.T(), reading)
+	assert.Equal(s.T(), &models.SensorReading{
+		Reading: 0,
+		Error:   "failed reading",
+	}, reading)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorHazardGases() {
@@ -87,13 +93,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorHazardGases() {
 		26.7, nil,
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.HazardousGases)
+	reading := s.airQualityReader.ReadSensor(sensors.HazardousGases)
 
 	assert.NotNil(s.T(), reading)
 	assert.Equal(s.T(), &models.SensorReading{
 		Reading: 26.7,
+		Error:   "",
 	}, reading)
-	assert.NoError(s.T(), err)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorHazardGases_Error() {
@@ -101,10 +107,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorHazardGases_Error() {
 		0.0, errors.New("failed reading"),
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.HazardousGases)
+	reading := s.airQualityReader.ReadSensor(sensors.HazardousGases)
 
-	assert.Nil(s.T(), reading)
-	assert.Error(s.T(), err)
+	assert.NotNil(s.T(), reading)
+	assert.Equal(s.T(), &models.SensorReading{
+		Reading: 0,
+		Error:   "failed reading",
+	}, reading)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorHumidity() {
@@ -112,13 +121,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorHumidity() {
 		77.4, nil,
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Humidity)
+	reading := s.airQualityReader.ReadSensor(sensors.Humidity)
 
 	assert.NotNil(s.T(), reading)
 	assert.Equal(s.T(), &models.SensorReading{
 		Reading: 77.4,
+		Error:   "",
 	}, reading)
-	assert.NoError(s.T(), err)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorHumidity_Error() {
@@ -126,10 +135,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorHumidity_Error() {
 		0.0, errors.New("failed reading"),
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Humidity)
+	reading := s.airQualityReader.ReadSensor(sensors.Humidity)
 
-	assert.Nil(s.T(), reading)
-	assert.Error(s.T(), err)
+	assert.NotNil(s.T(), reading)
+	assert.Equal(s.T(), &models.SensorReading{
+		Reading: 0,
+		Error:   "failed reading",
+	}, reading)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorPressure() {
@@ -137,13 +149,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorPressure() {
 		5.6, nil,
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Pressure)
+	reading := s.airQualityReader.ReadSensor(sensors.Pressure)
 
 	assert.NotNil(s.T(), reading)
 	assert.Equal(s.T(), &models.SensorReading{
 		Reading: 5.6,
+		Error:   "",
 	}, reading)
-	assert.NoError(s.T(), err)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorPressure_Error() {
@@ -151,10 +163,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorPressure_Error() {
 		0.0, errors.New("failed reading"),
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Pressure)
+	reading := s.airQualityReader.ReadSensor(sensors.Pressure)
 
-	assert.Nil(s.T(), reading)
-	assert.Error(s.T(), err)
+	assert.NotNil(s.T(), reading)
+	assert.Equal(s.T(), &models.SensorReading{
+		Reading: 0,
+		Error:   "failed reading",
+	}, reading)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorTemperature() {
@@ -162,13 +177,13 @@ func (s *SensorTestSuite) TestSensor_ReadSensorTemperature() {
 		23.0, nil,
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Temperature)
+	reading := s.airQualityReader.ReadSensor(sensors.Temperature)
 
 	assert.NotNil(s.T(), reading)
 	assert.Equal(s.T(), &models.SensorReading{
 		Reading: 23.0,
+		Error:   "",
 	}, reading)
-	assert.NoError(s.T(), err)
 }
 
 func (s *SensorTestSuite) TestSensor_ReadSensorTemperature_Error() {
@@ -176,8 +191,11 @@ func (s *SensorTestSuite) TestSensor_ReadSensorTemperature_Error() {
 		0.0, errors.New("failed reading"),
 	)
 
-	reading, err := s.airQualityReader.ReadSensor(sensors.Temperature)
+	reading := s.airQualityReader.ReadSensor(sensors.Temperature)
 
-	assert.Nil(s.T(), reading)
-	assert.Error(s.T(), err)
+	assert.NotNil(s.T(), reading)
+	assert.Equal(s.T(), &models.SensorReading{
+		Reading: 0,
+		Error:   "failed reading",
+	}, reading)
 }

@@ -1,7 +1,6 @@
 package service_test
 
 import (
-	"errors"
 	"sync"
 	"testing"
 	"time"
@@ -23,7 +22,10 @@ var expectedModelForReadSensors = &models.Sensors{
 	HazardousGases: &models.SensorReading{
 		Reading: 23.6,
 	},
-	Humidity: nil,
+	Humidity: &models.SensorReading{
+		Reading: 0,
+		Error:   "failed reading sensor",
+	},
 	Pressure: &models.SensorReading{
 		Reading: 77.2,
 	},
@@ -67,7 +69,6 @@ func (s *AirQualityTestSuite) TestSensor_GetAirQuality() {
 	airQuality := s.airQualityService.GetAirQuality()
 
 	assert.NotNil(s.T(), airQuality)
-	assert.Empty(s.T(), airQuality.Errors)
 	assert.Equal(s.T(), time.Time{}, airQuality.CurrentTime)
 }
 
@@ -85,7 +86,6 @@ func (s *AirQualityTestSuite) TestSensor_SingleRead() {
 	airQuality := s.airQualityService.SingleRead()
 
 	assert.NotNil(s.T(), airQuality)
-	assert.Equal(s.T(), 1, len(airQuality.Errors))
 	assert.Equal(s.T(), expectedModelForReadSensors, airQuality.Sensors)
 }
 
@@ -97,7 +97,6 @@ func (s *AirQualityTestSuite) TestSensor_SingleReadParallel() {
 	airQuality := s.airQualityService.SingleRead()
 
 	assert.NotNil(s.T(), airQuality)
-	assert.Equal(s.T(), 1, len(airQuality.Errors))
 	assert.Equal(s.T(), expectedModelForReadSensors, airQuality.Sensors)
 }
 
@@ -121,7 +120,6 @@ func (s *AirQualityTestSuite) TestSensor_RunReadSensors() {
 	airQuality := s.airQualityService.GetAirQuality()
 
 	assert.NotNil(s.T(), airQuality)
-	assert.Equal(s.T(), 1, len(airQuality.Errors))
 	assert.Equal(s.T(), expectedModelForReadSensors, airQuality.Sensors)
 }
 
@@ -129,28 +127,31 @@ func (s *AirQualityTestSuite) MockExpectedCallsForRead() {
 	s.airQualityReader.EXPECT().ReadSensor(sensors.Light).Return(
 		&models.SensorReading{
 			Reading: 55.0,
-		}, nil,
+		},
 	)
 
 	s.airQualityReader.EXPECT().ReadSensor(sensors.HazardousGases).Return(
 		&models.SensorReading{
 			Reading: 23.6,
-		}, nil,
+		},
 	)
 
 	s.airQualityReader.EXPECT().ReadSensor(sensors.Humidity).Return(
-		nil, errors.New("test error"),
+		&models.SensorReading{
+			Reading: 0,
+			Error:   "failed reading sensor",
+		},
 	)
 
 	s.airQualityReader.EXPECT().ReadSensor(sensors.Pressure).Return(
 		&models.SensorReading{
 			Reading: 77.2,
-		}, nil,
+		},
 	)
 
 	s.airQualityReader.EXPECT().ReadSensor(sensors.Temperature).Return(
 		&models.SensorReading{
 			Reading: 95.2,
-		}, nil,
+		},
 	)
 }
