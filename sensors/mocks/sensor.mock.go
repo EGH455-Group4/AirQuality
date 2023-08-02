@@ -36,12 +36,11 @@ func (m *MockAirQualityReader) EXPECT() *MockAirQualityReaderMockRecorder {
 }
 
 // ReadSensor mocks base method.
-func (m *MockAirQualityReader) ReadSensor(wantedReading sensors.Reading) (*models.SensorReading, error) {
+func (m *MockAirQualityReader) ReadSensor(wantedReading sensors.Reading) *models.SensorReading {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadSensor", wantedReading)
 	ret0, _ := ret[0].(*models.SensorReading)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	return ret0
 }
 
 // ReadSensor indicates an expected call of ReadSensor.

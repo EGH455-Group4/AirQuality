@@ -94,10 +94,6 @@ components:
               $ref: '#/components/schemas/SensorReading'
         current_time:
           type: string
-        errors:
-          type: array
-          items:
-            type: string
     GeneralResponse:
       type: object
     SensorReading:
@@ -105,3 +101,5 @@ components:
       properties:
         reading:
           type: number
+        error:
+          type: string

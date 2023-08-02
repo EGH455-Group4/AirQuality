@@ -10,7 +10,7 @@ import (
 //go:generate mockgen -destination mocks/sensor.mock.go -package mocks -source sensor.go
 
 type AirQualityReader interface {
-	ReadSensor(wantedReading Reading) (*models.SensorReading, error)
+	ReadSensor(wantedReading Reading) *models.SensorReading
 }
 
 type airQualityReader struct {
@@ -39,7 +39,7 @@ func NewAirQualityReaderFromSensor(cfg *config.Config, sensor AirQualitySensor) 
 	}
 }
 
-func (a *airQualityReader) ReadSensor(wantedReading Reading) (*models.SensorReading, error) {
+func (a *airQualityReader) ReadSensor(wantedReading Reading) *models.SensorReading {
 	var (
 		reading float64
 		err     error
@@ -57,14 +57,17 @@ func (a *airQualityReader) ReadSensor(wantedReading Reading) (*models.SensorRead
 	case Temperature:
 		reading, err = a.AirQualitySensor.ReadTemperature()
 	default:
-		return nil, ErrorUnknownReading
+		err = ErrorUnknownReading
 	}
 
 	if err != nil {
-		return nil, err
+		return &models.SensorReading{
+			Reading: reading,
+			Error:   err.Error(),
+		}
 	}
 
 	return &models.SensorReading{
 		Reading: reading,
-	}, nil
+	}
 }

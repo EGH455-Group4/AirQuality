@@ -5,7 +5,6 @@ import "time"
 type AirQuality struct {
 	Sensors     *Sensors  `json:"sensors"`
 	CurrentTime time.Time `json:"current_time"`
-	Errors      []string  `json:"errors"`
 }
 
 type Sensors struct {
@@ -18,6 +17,7 @@ type Sensors struct {
 
 type SensorReading struct {
 	Reading float64 `json:"reading"`
+	Error   string  `json:"error"`
 }
 
 type GeneralResponse struct{}

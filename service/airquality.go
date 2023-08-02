@@ -23,7 +23,6 @@ type AirQualityService interface {
 type airQualityService struct {
 	cfg              *config.Config
 	Sensors          *models.Sensors
-	Errors           []string
 	Running          bool
 	AirQualityReader sensors.AirQualityReader
 	ReadWg           *sync.WaitGroup
@@ -36,7 +35,6 @@ func NewAirQualityService(cfg *config.Config, airReader sensors.AirQualityReader
 	return &airQualityService{
 		cfg:              cfg,
 		Sensors:          &models.Sensors{},
-		Errors:           []string{},
 		Running:          false,
 		AirQualityReader: airReader,
 		ReadWg:           ReadWg,
@@ -48,7 +46,6 @@ func (s *airQualityService) GetAirQuality() *models.AirQuality {
 	return &models.AirQuality{
 		Sensors:     s.Sensors,
 		CurrentTime: s.ReadTime,
-		Errors:      s.Errors,
 	}
 }
 
@@ -58,7 +55,6 @@ func (s *airQualityService) SingleRead() *models.AirQuality {
 	return &models.AirQuality{
 		Sensors:     s.Sensors,
 		CurrentTime: s.ReadTime,
-		Errors:      s.Errors,
 	}
 }
 
@@ -73,7 +69,7 @@ func (s *airQualityService) Stop() {
 }
 
 func (s *airQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup) {
-	logrus.Info("Running read sensors loop")
+	logrus.WithField("parallel", s.cfg.ParallelRead).Info("Running read sensors loop")
 
 	wg.Add(1)
 	defer wg.Done()
@@ -92,7 +88,6 @@ func (s *airQualityService) RunReadSensors(closeCh chan bool, wg *sync.WaitGroup
 
 				logrus.WithFields(logrus.Fields{
 					"sensor_reading": s.Sensors,
-					"errors":         s.Errors,
 				}).Info("Read sensors")
 			}
 
@@ -116,102 +111,48 @@ func (s *airQualityService) readSensors() {
 }
 
 func (s *airQualityService) readSensorsLinear() {
-	s.Errors = []string{}
+	s.Sensors.Light = s.AirQualityReader.ReadSensor(sensors.Light)
 
-	if lightReading, err := s.AirQualityReader.ReadSensor(sensors.Light); err != nil {
-		s.Errors = append(s.Errors, err.Error())
-		s.Sensors.Light = nil
-	} else {
-		s.Sensors.Light = lightReading
-	}
+	s.Sensors.HazardousGases = s.AirQualityReader.ReadSensor(sensors.HazardousGases)
 
-	if hazardousGasesReading, err := s.AirQualityReader.ReadSensor(sensors.HazardousGases); err != nil {
-		s.Errors = append(s.Errors, err.Error())
-		s.Sensors.HazardousGases = nil
-	} else {
-		s.Sensors.HazardousGases = hazardousGasesReading
-	}
+	s.Sensors.Humidity = s.AirQualityReader.ReadSensor(sensors.Humidity)
 
-	if humidityReading, err := s.AirQualityReader.ReadSensor(sensors.Humidity); err != nil {
-		s.Errors = append(s.Errors, err.Error())
-		s.Sensors.Humidity = nil
-	} else {
-		s.Sensors.Humidity = humidityReading
-	}
+	s.Sensors.Pressure = s.AirQualityReader.ReadSensor(sensors.Pressure)
 
-	if pressureReading, err := s.AirQualityReader.ReadSensor(sensors.Pressure); err != nil {
-		s.Errors = append(s.Errors, err.Error())
-		s.Sensors.Pressure = nil
-	} else {
-		s.Sensors.Pressure = pressureReading
-	}
-
-	if temperatureReading, err := s.AirQualityReader.ReadSensor(sensors.Temperature); err != nil {
-		s.Errors = append(s.Errors, err.Error())
-		s.Sensors.Temperature = nil
-	} else {
-		s.Sensors.Temperature = temperatureReading
-	}
+	s.Sensors.Temperature = s.AirQualityReader.ReadSensor(sensors.Temperature)
 }
 
 func (s *airQualityService) readSensorsParallel() {
-	s.Errors = []string{}
-
 	s.ReadWg.Add(5)
 
 	go func(syncWg *sync.WaitGroup) {
 		defer syncWg.Done()
 
-		if lightReading, err := s.AirQualityReader.ReadSensor(sensors.Light); err != nil {
-			s.Errors = append(s.Errors, err.Error())
-			s.Sensors.Light = nil
-		} else {
-			s.Sensors.Light = lightReading
-		}
+		s.Sensors.Light = s.AirQualityReader.ReadSensor(sensors.Light)
 	}(s.ReadWg)
 
 	go func(syncWg *sync.WaitGroup) {
 		defer syncWg.Done()
 
-		if hazardousGasesReading, err := s.AirQualityReader.ReadSensor(sensors.HazardousGases); err != nil {
-			s.Errors = append(s.Errors, err.Error())
-			s.Sensors.HazardousGases = nil
-		} else {
-			s.Sensors.HazardousGases = hazardousGasesReading
-		}
+		s.Sensors.HazardousGases = s.AirQualityReader.ReadSensor(sensors.HazardousGases)
 	}(s.ReadWg)
 
 	go func(syncWg *sync.WaitGroup) {
 		defer syncWg.Done()
 
-		if humidityReading, err := s.AirQualityReader.ReadSensor(sensors.Humidity); err != nil {
-			s.Errors = append(s.Errors, err.Error())
-			s.Sensors.Humidity = nil
-		} else {
-			s.Sensors.Humidity = humidityReading
-		}
+		s.Sensors.Humidity = s.AirQualityReader.ReadSensor(sensors.Humidity)
 	}(s.ReadWg)
 
 	go func(syncWg *sync.WaitGroup) {
 		defer syncWg.Done()
 
-		if pressureReading, err := s.AirQualityReader.ReadSensor(sensors.Pressure); err != nil {
-			s.Errors = append(s.Errors, err.Error())
-			s.Sensors.Pressure = nil
-		} else {
-			s.Sensors.Pressure = pressureReading
-		}
+		s.Sensors.Pressure = s.AirQualityReader.ReadSensor(sensors.Pressure)
 	}(s.ReadWg)
 
 	go func(syncWg *sync.WaitGroup) {
 		defer syncWg.Done()
 
-		if temperatureReading, err := s.AirQualityReader.ReadSensor(sensors.Temperature); err != nil {
-			s.Errors = append(s.Errors, err.Error())
-			s.Sensors.Temperature = nil
-		} else {
-			s.Sensors.Temperature = temperatureReading
-		}
+		s.Sensors.Temperature = s.AirQualityReader.ReadSensor(sensors.Temperature)
 	}(s.ReadWg)
 
 	s.ReadWg.Wait()
@@ -219,5 +160,4 @@ func (s *airQualityService) readSensorsParallel() {
 
 func (s *airQualityService) resetVars() {
 	s.Sensors = &models.Sensors{}
-	s.Errors = []string{}
 }

@@ -71,7 +71,7 @@ func (s *HandlerTestSuite) TestHandlerGetAirQuality() {
 	data, err := ioutil.ReadAll(res.Body)
 
 	assert.NoError(s.T(), err)
-	assert.Equal(s.T(), "{\"sensors\":null,\"current_time\":\"0001-01-01T00:00:00Z\",\"errors\":null}", string(data))
+	assert.Equal(s.T(), "{\"sensors\":null,\"current_time\":\"0001-01-01T00:00:00Z\"}", string(data))
 }
 
 func (s *HandlerTestSuite) TestHandlerSingleRead() {
@@ -90,7 +90,7 @@ func (s *HandlerTestSuite) TestHandlerSingleRead() {
 	data, err := ioutil.ReadAll(res.Body)
 
 	assert.NoError(s.T(), err)
-	assert.Equal(s.T(), "{\"sensors\":null,\"current_time\":\"0001-01-01T00:00:00Z\",\"errors\":null}", string(data))
+	assert.Equal(s.T(), "{\"sensors\":null,\"current_time\":\"0001-01-01T00:00:00Z\"}", string(data))
 }
 
 func (s *HandlerTestSuite) TestHandlerStart() {
